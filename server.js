@@ -16,9 +16,9 @@ app.use(express.static(__dirname + '/public'));
 
 // our database is an array for now with some hardcoded values
 var todos = [
-  // { _id: 1, task: 'Laundry', description: 'Wash clothes' },
-  // { _id: 2, task: 'Grocery Shopping', description: 'Buy dinner for this week' },
-  // { _id: 3, task: 'Homework', description: 'Make this app super awesome!' }
+  { _id: 1, task: 'Laundry', description: 'Wash clothes' },
+  { _id: 2, task: 'Grocery Shopping', description: 'Buy dinner for this week' },
+  { _id: 3, task: 'Homework', description: 'Make this app super awesome!' }
 ];
 
 /**********
@@ -51,23 +51,35 @@ app.get('/api/todos/search', function search(req, res) {
 });
 
 app.get('/api/todos', function index(req, res) {
-  /* This endpoint responds with all of the todos
-   */
+  console.log("200");
+  res.json({todos: todos});
 });
 
 app.post('/api/todos', function create(req, res) {
-  /* This endpoint will add a todo to our "database"
-   * and respond with the newly created todo.
-   */
+  todos.push(req.body);
+  req.body._id = todos.length;
+  res.json(req.body);
 });
 
 app.get('/api/todos/:id', function show(req, res) {
+  var TodoId = req.params.id;
+  var requestedToDo;
+  for (var i=0; i<todos.length; i++) {
+    if (id==todos[i]._id) {
+      requestedToDo = todos[i];
+    }
+  }
+  res.send(requestedToDo);
   /* This endpoint will return a single todo with the
    * id specified in the route parameter (:id)
    */
 });
 
 app.put('/api/todos/:id', function update(req, res) {
+  var currentToDo = todos[req.params.id - 1];
+  currentToDo.task = req.body.task;
+  currentToDo.description = req.body.description;
+  res.json(currentToDo);
   /* This endpoint will update a single todo with the
    * id specified in the route parameter (:id) and respond
    * with the newly updated todo.
@@ -75,6 +87,9 @@ app.put('/api/todos/:id', function update(req, res) {
 });
 
 app.delete('/api/todos/:id', function destroy(req, res) {
+  var deletedToDo = req.params.id - 1;
+  res.json(deletedToDo);
+  todos.splice(deletedToDo, 1);
   /* This endpoint will delete a single todo with the
    * id specified in the route parameter (:id) and respond
    * with deleted todo.
